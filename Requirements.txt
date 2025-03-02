@@ -1,0 +1,4 @@
+pandas
+numpy
+setuptools
+# -e . #for installation of setup.py

@@ -1,4 +1,8 @@
 pandas
 numpy
 setuptools
+pymysql
+python-dotenv
+sqlalchemy
+scikit-learn
 # -e . #for installation of setup.py

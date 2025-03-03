@@ -49,3 +49,6 @@ for filepath in list_of_files:
     else:
         logging.info(f"{filename} is already exists")
 ## %%
+# We can also use Cookiecutter to create the project structure
+# !pip install cookiecutter
+# !cookiecutter gh:drivendata/cookiecutter-data-science

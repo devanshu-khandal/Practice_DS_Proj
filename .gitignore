@@ -1,12 +1,10 @@
 Old Codes
 Old Codes/*
 venv/*
-src/AI_ML/__pycache__/*
 __pycache__/*
 *.pyc
 *.py[cod]
 .DS_Store
-src/*.egg-info/*
 
 
 # Byte-compiled / optimized / DLL files

@@ -25,7 +25,9 @@ class DataIngestion:
             ## Reading the data from mysql
             logging.info("Reading the data from mysql")
 
-            df=read_sql_data()
+            # df=read_sql_data() # read data from mysql database using read_sql_data function from utils.py
+            df=pd.read_csv(os.path.join('notebooks/data','raw.csv'))
+
             os.makedirs(os.path.dirname(self.ingestion_config.train_data_path), exist_ok=True)
             df.to_csv(self.ingestion_config.raw_data_path, index=False, header=True)
 
@@ -35,7 +37,8 @@ class DataIngestion:
 
             logging.info("Data Ingestion completed successfully")
 
-            return self.ingestion_config.train_data_path, self.ingestion_config.test_data_path
+            return (self.ingestion_config.train_data_path, 
+                    self.ingestion_config.test_data_path)
 
         except Exception as e:
             raise CustomException(e, sys)

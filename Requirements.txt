@@ -5,4 +5,7 @@ pymysql
 python-dotenv
 sqlalchemy
 scikit-learn
+seaborn
+catboost
+xgboost
 # -e . #for installation of setup.py

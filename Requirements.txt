@@ -10,4 +10,6 @@ catboost
 xgboost
 Flask
 dill
+mlflow
+dagshub
 # -e . #for installation of setup.py

@@ -1,5 +1,6 @@
 import os
 import sys
+import numpy as np
 from dataclasses import dataclass
 
 from catboost import CatBoostRegressor
@@ -9,10 +10,15 @@ from sklearn.ensemble import (
     RandomForestRegressor,
 )
 from sklearn.linear_model import LinearRegression
-from sklearn.metrics import r2_score
+from sklearn.metrics import r2_score, mean_absolute_error, mean_squared_error
 from sklearn.neighbors import KNeighborsRegressor
 from sklearn.tree import DecisionTreeRegressor
 from xgboost import XGBRegressor
+
+import mlflow
+import mlflow.sklearn
+# import dagshub #open source lib
+from urllib.parse import urlparse
 
 from src.AI_ML.exception import CustomException
 from src.AI_ML.logger import logging
@@ -25,6 +31,13 @@ class ModelTrainerConfig:
 class ModelTrainer:
     def __init__(self):
         self.model_trainer_config = ModelTrainerConfig()
+
+    def evaluate_model(self, true, predicted):
+        mae = mean_absolute_error(true, predicted)
+        # mse = mean_squared_error(true, predicted)
+        rmse = np.sqrt(mean_squared_error(true, predicted))
+        r2_square = r2_score(true, predicted)
+        return rmse,mae, r2_square
 
     def initiate_train_model(self,train_array,test_array):
         """
@@ -99,6 +112,47 @@ class ModelTrainer:
             ]
 
             best_model = models[best_model_name]
+
+            print(f"This is our best Model : {best_model_name}")
+
+            model_names = list(params.keys())
+            
+            actual_model = ""
+            for model in model_names:
+                if best_model_name==model:
+                    actual_model = actual_model + model
+
+            best_params = params[actual_model]
+
+            # mlflow (tracking/logging in our dagshub)
+            logging.info("Tracking of Model started")
+            # dagshub.init(repo_owner='devanshu-khandal', repo_name='Practice_DS_Proj', mlflow=True)
+            mlflow.set_registry_uri("https://dagshub.com/devanshu-khandal/Practice_DS_Proj.mlflow")
+            tracking_url_type_store = urlparse(mlflow.get_tracking_uri()).scheme
+            with mlflow.start_run():
+
+                predicted_qualities = best_model.predict(X_test)
+
+                (rmse,mae,r2) = self.evaluate_model(y_test,predicted_qualities)
+
+                mlflow.log_params(best_params)
+
+                mlflow.log_metric("rmse",rmse) # If you want to give metrices then use .log_metrics (dict)
+                mlflow.log_metric("mae",mae)
+                mlflow.log_metric("r2", r2)
+
+                # Model registry does not work with file store
+                if tracking_url_type_store != "file":
+
+                    # Register the model
+                    # There are other ways to use the Model Registry, which depends on the use case,
+                    # please refer to the doc for more information:
+                    # https://mlflow.org/docs/latest/model-registry.html#api-workflow
+                    mlflow.sklearn.log_model(best_model, "trained_model", registered_model_name=actual_model)
+                else:
+                    mlflow.sklearn.log_model(best_model, "trained_model")
+
+            logging.info("Tracking of Model started")
 
             # Threshold for our score, if it falls below this then we will end our training
             if best_model_score<0.6:

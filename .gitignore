@@ -5,6 +5,7 @@ __pycache__/*
 *.pyc
 *.py[cod]
 .DS_Store
+training_code.py
 
 
 # Byte-compiled / optimized / DLL files

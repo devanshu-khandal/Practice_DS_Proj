@@ -31,12 +31,12 @@ class DataTransformation:
             logging.info("Data Transformation started")
 
             # Feature Engineering
-            num_features = ['writing score', 'reading score']
+            num_features = ['writing_score', 'reading_score']
             
             #train_df.select_dtypes(exclude="object").columns
-            cat_features = ["gender","race/ethnicity","parental level of education",
+            cat_features = ["gender","race_ethnicity","parental_level_of_education",
                             "lunch",
-                            "test preparation course"] #test_df.select_dtypes(include="object").columns
+                            "test_preparation_course"] #test_df.select_dtypes(include="object").columns
 
             # To handle missing values
             num_pipeline = Pipeline(steps=[
@@ -72,10 +72,14 @@ class DataTransformation:
             train_df = pd.read_csv(train_path)
             test_df = pd.read_csv(test_path)
 
+            #changing the column names in the standard format
+            train_df.columns = train_df.columns.str.replace('/', '_').str.replace(' ', '_')
+            test_df.columns = test_df.columns.str.replace('/', '_').str.replace(' ', '_')
+
             preprocessing_obj = self.get_transformer_obj()
 
-            target_column_name = 'math score'
-            numerical_columns = ['writing score', 'reading score']
+            target_column_name = 'math_score'
+            numerical_columns = ['writing_score', 'reading_score']
             #train_df.select_dtypes(exclude=["object",'math score']).columns
 
             # Divide the train data into dependent and independent variables

@@ -7,6 +7,7 @@ from src.AI_ML.exception import CustomException
 import pymysql
 from dotenv import load_dotenv
 import pickle
+import dill
 
 from sklearn.model_selection import GridSearchCV
 from sklearn.metrics import r2_score
@@ -18,6 +19,8 @@ user = os.getenv("user")
 password = os.getenv("password")
 database = os.getenv("database")
 port = os.getenv("port")
+
+
 # print(str(database))
 def read_sql_data():
     # logging.info("Reading data from MySQL database")
@@ -85,3 +88,11 @@ def evaluate_models(X_train, y_train,X_test,y_test,models,param):
     except Exception as e:
         logging.error("Error in Evaluation of model")
         raise CustomException(e,sys)
+    
+def load_object(file_path):
+    try:
+        with open(file_path, "rb") as file_obj:
+            return dill.load(file_obj)
+
+    except Exception as e:
+        raise CustomException(e, sys)
